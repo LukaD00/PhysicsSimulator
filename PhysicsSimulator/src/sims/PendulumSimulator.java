@@ -136,6 +136,10 @@ public class PendulumSimulator extends Simulator {
 		
 	}
 	
+	
+	/**
+	 *  Used just for testing this specific Simulator. Will be removed later.
+	 */
 	public static void main(String[] args) {
 		try {
 			SwingUtilities.invokeAndWait(() -> {
