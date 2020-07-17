@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -27,9 +28,7 @@ import constants.PhysicsRatios;
 
 @SuppressWarnings("serial")
 public class PendulumSimulator extends Simulator {
-	
 
-	
 	private double length; 
 	private final double DEFAULT_LENGTH = 5;
 	
@@ -39,22 +38,22 @@ public class PendulumSimulator extends Simulator {
 	private double velocity;
 	private final double START_VELOCITY = 0;
 	
-	
-	
 	public PendulumSimulator() {
 		super();
 		
+		// default starting positions, can be changed via text fields and buttons
 		velocity = START_VELOCITY;
 		length = DEFAULT_LENGTH;
 		angle = DEFAULT_START_ANGLE;
 		
 		
-		// pendulum setup for the central panel
+		// CENTER PANEL
+		// pendulum setup 
 		Pendulum pendulum = new Pendulum();
 		this.add(pendulum, BorderLayout.CENTER);
 		
-		// SOUTH PANEL for the paramater setup
 		
+		// SOUTH PANEL
 		// initializing all components
 		JLabel lengthLabel = new JLabel("Length (m): ");
 		JTextField lengthField = new JTextField(Double.toString(DEFAULT_LENGTH));
@@ -63,8 +62,8 @@ public class PendulumSimulator extends Simulator {
 		JButton startButton = new JButton("Start");
 		JButton resumeButton = new JButton("Resume");
 		JButton pauseButton = new JButton("Pause");
-		ArrayList<Component> southPanelComponents = new ArrayList<Component>();
-		southPanelComponents.add(lengthLabel);
+		ArrayList<Component> southPanelComponents = new ArrayList<Component>(); // easier to set preffered and maximum dimension
+		southPanelComponents.add(lengthLabel);									// when all the components are in the same collection
 		southPanelComponents.add(lengthField);
 		southPanelComponents.add(angleLabel);
 		southPanelComponents.add(angleField);
@@ -76,7 +75,7 @@ public class PendulumSimulator extends Simulator {
 		JPanel southPanel = new JPanel();
 		southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.PAGE_AXIS));
 		
-		final Dimension RIGID = new Dimension(10,20);
+		final Dimension RIGID = new Dimension(10,20); // dimension of spaces between and to the side of all components
 		
 		JPanel line1 = new JPanel(); 
 		line1.setLayout(new BoxLayout(line1, BoxLayout.LINE_AXIS));
@@ -124,7 +123,8 @@ public class PendulumSimulator extends Simulator {
 				angle = Math.toRadians(Double.parseDouble(angleField.getText()));
 				pendulum.start();
 			} catch (Exception ex) {
-				// TODO write read error exceptions?
+				// TODO write read error exceptions? 
+				// right now nothing happens with invalid inputs, could display an error message somewhere?
 			}
 		});
 		resumeButton.addActionListener(e -> {
@@ -154,19 +154,30 @@ public class PendulumSimulator extends Simulator {
 	}
 	
 	
+	/**
+	 * This is the actual animation that the main frame of the PendulumSimulator uses.
+	 * PendulumSimulator keeps the information about the pendulum's length, angle and velocity.
+	 * Pendulum calculates the current acceleration, and updates the velocity and angle accordingly,
+	 * and then it uses those values to draw a pendulum.
+	 */
 	private class Pendulum extends JPanel implements ActionListener {
 		
-		private final int TIME_STEP = 1; 
-		Timer timer = new Timer(TIME_STEP, this);
+		/*
+		 *  Timer notifies its ActionListener, the Pendulum, every TIME_STEP milliseconds,
+		 *  Pendulum's actionPerformed method triggers, which calls repaint, which
+		 *  then calls paintComponent again.
+		 *  
+		 *  The timer can be controlled with the Pendulum's start, pause and resume methods.
+		 */
+		private final int TIME_STEP = 1;
+		Timer timer = new Timer(TIME_STEP, this); 
 		
 		public void start() {
 			timer.restart();
 		}
-		
 		public void pause() {
 			timer.stop();
 		}
-		
 		public void resume() {
 			timer.start();
 		}
@@ -176,7 +187,7 @@ public class PendulumSimulator extends Simulator {
 			super.paintComponent(g);
 					
 			//calculating new acceleration, velocity and angle
-			double acceleration = -1 * Physics.G * Math.sin(angle) / length;
+			double acceleration = -1 * Physics.G * Math.sin(angle) / length; // a = -g/l * sin(angle)
 			velocity += acceleration * TIME_STEP/1000;
 			angle += velocity * TIME_STEP/1000;
 			
@@ -185,14 +196,12 @@ public class PendulumSimulator extends Simulator {
 			int y = (int) (length * PhysicsRatios.METER_TO_PIXEL * Math.cos(angle));
 			
 			//calculating top of pendulum location
-			int PendulumCenterX = this.getWidth() / 2;
-			int PendulumCenterY = 40;
+			int PendulumCenterX = this.getWidth() / 2; // centered in its panel
+			int PendulumCenterY = 40; // offset from top 
 			
 			g.setColor(Color.BLACK);
 			g.drawLine(PendulumCenterX, PendulumCenterY,
-					PendulumCenterX+x, PendulumCenterY+y);
-			
-			
+					PendulumCenterX+x, PendulumCenterY+y);	
 		}
 
 		@Override
