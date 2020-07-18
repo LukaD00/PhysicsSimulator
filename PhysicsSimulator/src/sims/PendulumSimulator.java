@@ -2,30 +2,31 @@ package sims;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 
-
-import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
 
-
 import constants.Physics;
 import constants.PhysicsRatios;
 
+import guiHelperClasses.InputLine;
+import guiHelperClasses.ButtonControl;
 
+
+/**
+ * PendulumSimulator is a simple pendulum simulator. 
+ * So far, you can choose 2 starting parameters - length and starting angle.
+ * 
+ * @author Luka
+ *
+ */
 @SuppressWarnings("serial")
 public class PendulumSimulator extends Simulator {
 
@@ -48,92 +49,62 @@ public class PendulumSimulator extends Simulator {
 		
 		
 		// CENTER PANEL
-		// pendulum setup 
 		Pendulum pendulum = new Pendulum();
 		this.add(pendulum, BorderLayout.CENTER);
 		
 		
 		// SOUTH PANEL
-		// initializing all components
-		JLabel lengthLabel = new JLabel("Length (m): ");
-		JTextField lengthField = new JTextField(Double.toString(DEFAULT_LENGTH));
-		JLabel angleLabel = new JLabel("Starting angle (deg): ");
-		JTextField angleField = new JTextField(Double.toString(Math.toDegrees(DEFAULT_START_ANGLE)));
-		JButton startButton = new JButton("Start");
-		JButton resumeButton = new JButton("Resume");
-		JButton pauseButton = new JButton("Pause");
-		ArrayList<Component> southPanelComponents = new ArrayList<Component>(); // easier to set preffered and maximum dimension
-		southPanelComponents.add(lengthLabel);									// when all the components are in the same collection
-		southPanelComponents.add(lengthField);
-		southPanelComponents.add(angleLabel);
-		southPanelComponents.add(angleField);
-		southPanelComponents.add(startButton);
-		southPanelComponents.add(resumeButton);
-		southPanelComponents.add(pauseButton);
-		
-		// setting up layout
 		JPanel southPanel = new JPanel();
 		southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.PAGE_AXIS));
 		
-		final Dimension RIGID = new Dimension(10,20); // dimension of spaces between and to the side of all components
+		// length
+		InputLine lengthInput = new InputLine("Pendulum length (m): ", DEFAULT_LENGTH);
+		southPanel.add(lengthInput);
+
+		// starting angle
+		InputLine angleInput = new InputLine("Starting angle (deg): ", Math.toDegrees(DEFAULT_START_ANGLE)); 
+		southPanel.add(angleInput);
 		
-		JPanel line1 = new JPanel(); 
-		line1.setLayout(new BoxLayout(line1, BoxLayout.LINE_AXIS));
-		line1.add(Box.createRigidArea(RIGID));
-		line1.add(lengthLabel); 
-		line1.add(Box.createRigidArea(RIGID));
-		line1.add(lengthField);
-		line1.setAlignmentX(LEFT_ALIGNMENT);
-		southPanel.add(line1);
-		
-		JPanel line2 = new JPanel(); 
-		line2.setLayout(new BoxLayout(line2, BoxLayout.LINE_AXIS));
-		line2.add(Box.createRigidArea(RIGID));
-		line2.add(angleLabel); 
-		line2.add(Box.createRigidArea(RIGID));
-		line2.add(angleField);
-		line2.setAlignmentX(LEFT_ALIGNMENT);
-		southPanel.add(line2);
-		
-		JPanel line3 = new JPanel(); 
-		line3.setLayout(new BoxLayout(line3, BoxLayout.LINE_AXIS));
-		line3.add(Box.createRigidArea(RIGID));
-		line3.add(startButton); 
-		line3.add(Box.createRigidArea(RIGID));
-		line3.add(resumeButton);
-		line3.add(Box.createRigidArea(RIGID));
-		line3.add(pauseButton);
-		line3.setAlignmentX(LEFT_ALIGNMENT);
-		southPanel.add(line3);
-		
-		final Dimension PREFFERED_SIZE = new Dimension(150, 20);
-		final Dimension MAXIMUM_SIZE = new Dimension(150,20);
-		for (Component c : southPanelComponents) {
-			c.setPreferredSize(PREFFERED_SIZE);
-			c.setMaximumSize(MAXIMUM_SIZE);
-		}
-		
-		this.add(southPanel, BorderLayout.SOUTH);
-		
-		// action listeners for buttons
-		startButton.addActionListener(e -> {
-			try {
-				velocity = START_VELOCITY;
-				length = Double.parseDouble(lengthField.getText());
-				angle = Math.toRadians(Double.parseDouble(angleField.getText()));
-				pendulum.start();
-			} catch (Exception ex) {
-				// TODO write read error exceptions? 
-				// right now nothing happens with invalid inputs, could display an error message somewhere?
+		// control buttons
+		ButtonControl buttons = new ButtonControl();
+		buttons.addActionListener(e -> {
+			if (e.getActionCommand()=="start") {
+				/**
+				 *  checks if inputs are valid - if so, starts the pendulum
+				 *  with new values, else throws errors next to invalid inputs
+				 */
+				boolean validInput = true;	
+				try {
+					length = lengthInput.getValue();
+					lengthInput.setErrorLabel("");
+				} catch (NullPointerException | NumberFormatException ex) {
+					lengthInput.setErrorLabel("Invalid input!");
+					validInput = false;
+				}
+				
+				try {
+					angle = Math.toRadians(angleInput.getValue());
+					angleInput.setErrorLabel("");
+				} catch (NullPointerException | NumberFormatException ex) {
+					angleInput.setErrorLabel("Invalid input!");
+					validInput = false;
+				}
+				
+				if (validInput) {
+					velocity = 0;
+					pendulum.start();
+				}
+				
+			} else if (e.getActionCommand()=="resume") {
+				pendulum.resume();
+			} else if (e.getActionCommand()=="pause") {
+				pendulum.pause();
 			}
 		});
-		resumeButton.addActionListener(e -> {
-			pendulum.resume();
-		});
-		pauseButton.addActionListener(e -> {
-			pendulum.pause();
-		});
+		southPanel.add(buttons);
 		
+
+		this.add(southPanel, BorderLayout.SOUTH);
 	}
 	
 	
@@ -186,6 +157,9 @@ public class PendulumSimulator extends Simulator {
 			timer.start();
 		}
 
+		/**
+		 * The pendulum is painted here.
+		 */
 		@Override
 		protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
@@ -208,6 +182,9 @@ public class PendulumSimulator extends Simulator {
 					PendulumCenterX+x, PendulumCenterY+y);	
 		}
 
+		/**
+		 *  Timer triggers actionPerformed, which triggers a repaint of the pendulum.
+		 */
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			this.repaint();
