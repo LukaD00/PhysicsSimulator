@@ -2,7 +2,6 @@ package sims;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -45,21 +44,13 @@ public abstract class Simulator extends JFrame {
 	 * Sets the parameters for the simulation's window.
 	 */
 	public final void launch() {
-		try {
-			SwingUtilities.invokeAndWait(() -> {
-				JFrame window = getWindow();
-				window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE); // TODO - change to dispose later
-				window.setSize(new Dimension(1000, 750));
-				window.setTitle(this.getName());
-				window.setVisible(true);
-			});
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		SwingUtilities.invokeLater(() -> {
+			JFrame window = getWindow();
+			window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); 
+			window.setSize(new Dimension(1000, 750));
+			window.setTitle(this.getName());
+			window.setVisible(true);
+		});
 	}
 	
 }

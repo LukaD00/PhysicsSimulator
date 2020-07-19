@@ -110,7 +110,7 @@ public class PendulumSimulator extends Simulator {
 	
 	
 	/**
-	 *  TODO - remove later
+	 *  just for testing
 	 */
 	public static void main(String[] args) {
 		PendulumSimulator pendulum = new PendulumSimulator();
