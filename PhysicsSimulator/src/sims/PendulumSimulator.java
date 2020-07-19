@@ -5,13 +5,10 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.WindowConstants;
 
 import constants.Physics;
 import constants.PhysicsRatios;
@@ -38,6 +35,10 @@ public class PendulumSimulator extends Simulator {
 	
 	private double velocity;
 	private final double START_VELOCITY = 0;
+	
+	public String getName() {
+		return "Pendulum";
+	}
 	
 	public PendulumSimulator() {
 		super();
@@ -109,23 +110,11 @@ public class PendulumSimulator extends Simulator {
 	
 	
 	/**
-	 *  Used just for testing this specific Simulator. Will be removed later.
+	 *  TODO - remove later
 	 */
 	public static void main(String[] args) {
-		try {
-			SwingUtilities.invokeAndWait(() -> {
-				PendulumSimulator window = new PendulumSimulator();
-				window.setVisible(true);
-				window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-				window.setSize(1500,1000);
-			});
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		PendulumSimulator pendulum = new PendulumSimulator();
+		pendulum.launch();
 	}
 	
 	
