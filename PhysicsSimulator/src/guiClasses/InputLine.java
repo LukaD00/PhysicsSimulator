@@ -1,4 +1,4 @@
-package guiHelperClasses;
+package guiClasses;
 
 import java.awt.Color;
 

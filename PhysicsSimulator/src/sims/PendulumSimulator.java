@@ -13,8 +13,9 @@ import javax.swing.Timer;
 import constants.Physics;
 import constants.PhysicsRatios;
 
-import guiHelperClasses.InputLine;
-import guiHelperClasses.ButtonControl;
+import guiClasses.ButtonControl;
+import guiClasses.InputLine;
+import guiClasses.Vector;
 
 
 /**
@@ -92,7 +93,7 @@ public class PendulumSimulator extends Simulator {
 				}
 				
 				if (validInput) {
-					velocity = 0;
+					velocity = START_VELOCITY;
 					pendulum.start();
 				}
 				
@@ -152,23 +153,32 @@ public class PendulumSimulator extends Simulator {
 		@Override
 		protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
+			
+			// calculating top of pendulum location
+			int PendulumCenterX = this.getWidth() / 2; // centered in its panel
+			int PendulumCenterY = 40; // offset from top 
 					
-			//calculating new acceleration, velocity and angle
+			// calculating new acceleration, velocity and angle
 			double acceleration = -1 * Physics.G * Math.sin(angle) / length; // a = -g/l * sin(angle)
 			velocity += acceleration * TIME_STEP/1000;
 			angle += velocity * TIME_STEP/1000;
 			
-			//calculating new position (relative to top of pendulum)
-			int x = (int) (length * PhysicsRatios.METER_TO_PIXEL * Math.sin(angle));
-			int y = (int) (length * PhysicsRatios.METER_TO_PIXEL * Math.cos(angle));
+			// calculating new position 
+			int x = (int) (length * Math.sin(angle) * PhysicsRatios.METER_TO_PIXEL) + PendulumCenterX;
+			int y = (int) (length * Math.cos(angle) * PhysicsRatios.METER_TO_PIXEL) + PendulumCenterY;
 			
-			//calculating top of pendulum location
-			int PendulumCenterX = this.getWidth() / 2; // centered in its panel
-			int PendulumCenterY = 40; // offset from top 
-			
+			// drawing pendulum
 			g.setColor(Color.BLACK);
-			g.drawLine(PendulumCenterX, PendulumCenterY,
-					PendulumCenterX+x, PendulumCenterY+y);	
+			g.drawLine(PendulumCenterX, PendulumCenterY, x, y);	
+			
+			
+			// drawing velocity vector
+			int x2 = (int) (velocity * Math.cos(angle) * PhysicsRatios.VELOCITY_SCALING) + x;
+			int y2 = (int) -(velocity * Math.sin(angle) * PhysicsRatios.VELOCITY_SCALING) + y;
+			g.setColor(Color.RED);
+			Vector.drawVector(g, x, y, x2, y2);
+			
+			
 		}
 
 		/**

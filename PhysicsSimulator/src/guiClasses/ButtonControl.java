@@ -1,4 +1,4 @@
-package guiHelperClasses;
+package guiClasses;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
