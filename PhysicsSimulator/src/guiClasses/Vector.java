@@ -1,6 +1,8 @@
 package guiClasses;
 
+import java.awt.BasicStroke;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 public class Vector {
 
@@ -16,8 +18,9 @@ public class Vector {
 	public static void drawVector(Graphics g, int x1, int y1, int x2, int y2) {
 		
 		// draws the basic vector's line
-		g.drawLine(x1, y1, x2, y2);	
-		
+		Graphics2D g2D = (Graphics2D) g;
+		g2D.setStroke(new BasicStroke(2));
+		g2D.drawLine(x1, y1, x2, y2);	
 		
 		// Now we have to figure out the coordinates of the tip of the sides of the arrows of the vector.
 		double xTip1, yTip1;
@@ -27,9 +30,9 @@ public class Vector {
 		double xI = 0.9*x2 + 0.1*x1;
 		double yI = 0.9*y2 + 0.1*y1;
 				  
-		// distance of intersection to head:
-		// "double L = Math.sqrt(Math.pow(x2-xI, 2) + Math.pow(y2-yI, 2))" also works
-		double L = 0.1 * Math.sqrt(Math.pow(x2-x1, 2) + Math.pow(y2-y1, 2));
+		// distance of main line to tip of wings 
+		// currently set to half of the distance from intersection to tip
+		double L = 0.5 * Math.sqrt(Math.pow(x2-xI, 2) + Math.pow(y2-yI, 2));
 				  
 		if (y2-y1 != 0) {
 			
@@ -44,7 +47,7 @@ public class Vector {
 			* p... y-yI = kI * (x-xI)
 			* 
 			* all points (x,y) distance L from intersection (xI, yI):
-			* (x-xI)^2 + (y-yI)^2 = L^2
+			* (x-xI)^2 + (y-yI)^2 = L^2 
 			* 
 			* plugging in p:
 			* (x-xI)^2 + ( kI*(x-xI) )^2 = L^2
@@ -69,12 +72,13 @@ public class Vector {
 			xTip2 = xI;
 			
 			yTip1 = yI + L;
-			yTip2 = yI -L;
+			yTip2 = yI - L;
 		}
 
 		// finally, we can draw! 
-		g.drawLine((int)xTip1, (int)yTip1, x2, y2);	
-		g.drawLine((int)xTip2, (int)yTip2, x2, y2);	
+		int[] xArray = new int[] {(int)xTip1, (int)xTip2, x2};
+		int[] yArray = new int[] {(int)yTip1, (int)yTip2, y2};
+		g.fillPolygon(xArray, yArray, 3);
 	}
 	
 }
