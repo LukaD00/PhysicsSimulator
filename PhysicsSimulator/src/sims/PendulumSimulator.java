@@ -193,7 +193,10 @@ public class PendulumSimulator extends Simulator {
 			
 			// drawing pendulum
 			g.setColor(Color.BLACK);
-			g.drawLine(PendulumCenterX, PendulumCenterY, x, y);	
+			g.drawLine(PendulumCenterX, PendulumCenterY, x, y);
+			
+			final int OVAL_RADIUS = 20;
+			g.fillOval(x-OVAL_RADIUS, y-OVAL_RADIUS, 2*OVAL_RADIUS, 2*OVAL_RADIUS);
 			
 			// drawing acceleration vector
 			if (showAcceleration) {
@@ -210,8 +213,6 @@ public class PendulumSimulator extends Simulator {
 				g.setColor(Color.RED);
 				Vector.drawVector(g, x, y, x2, y2);
 			}
-			
-			
 		}
 
 		/**
