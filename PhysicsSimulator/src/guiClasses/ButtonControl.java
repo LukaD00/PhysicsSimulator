@@ -26,8 +26,8 @@ import constants.GUI;
 public class ButtonControl extends JPanel {
 	
 	private JButton startButton;
-	private JButton resumeButton;
 	private JButton pauseButton;
+	private boolean paused;
 	
 	private List<ActionListener> listeners;
 	
@@ -35,15 +35,15 @@ public class ButtonControl extends JPanel {
 	 * Initializes the ButtonControl, always the same.
 	 */
 	public ButtonControl() {
+		
+		paused = true;
+		
 		listeners = new ArrayList<ActionListener>();
 		startButton = new JButton("Start");
-		resumeButton = new JButton("Resume");
-		pauseButton = new JButton("Pause");
+		pauseButton = new JButton("Resume");
 		
 		startButton.setPreferredSize(GUI.PREFFERED_SIZE);
 		startButton.setMaximumSize(GUI.MAXIMUM_SIZE);
-		resumeButton.setPreferredSize(GUI.PREFFERED_SIZE);
-		resumeButton.setMaximumSize(GUI.MAXIMUM_SIZE);
 		pauseButton.setPreferredSize(GUI.PREFFERED_SIZE);
 		pauseButton.setMaximumSize(GUI.MAXIMUM_SIZE);
 		
@@ -52,31 +52,37 @@ public class ButtonControl extends JPanel {
 		this.add(Box.createRigidArea(GUI.RIGID));
 		this.add(startButton); 
 		this.add(Box.createRigidArea(GUI.RIGID));
-		this.add(resumeButton);
-		this.add(Box.createRigidArea(GUI.RIGID));
 		this.add(pauseButton);
 		this.add(Box.createRigidArea(GUI.RIGID));
 		
 		startButton.addActionListener(e -> {
 			for (ActionListener listener : listeners) {
+				paused = false;
+				pauseButton.setText("Pause");
 				ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED,
 						"start");
 				listener.actionPerformed(event);
 			}
 		});
-		resumeButton.addActionListener(e -> {
-			for (ActionListener listener : listeners) {
-				ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED,
-						"resume");
-				listener.actionPerformed(event);
-			}
-		});
 		pauseButton.addActionListener(e -> {
-			for (ActionListener listener : listeners) {
-				ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED,
-						"pause");
-				listener.actionPerformed(event);
+			if (paused) {
+				paused = false;
+				pauseButton.setText("Pause");
+				for (ActionListener listener : listeners) {
+					ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED,
+							"resume");
+					listener.actionPerformed(event);
+				}
+			} else {
+				paused = true;
+				pauseButton.setText("Resume");
+				for (ActionListener listener : listeners) {
+					ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED,
+							"pause");
+					listener.actionPerformed(event);
+				}
 			}
+			
 		});
 	} 
 	
