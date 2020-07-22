@@ -6,13 +6,10 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import constants.GUI;
 import constants.Physics;
 import constants.PhysicsRatios;
 
@@ -42,6 +39,7 @@ public class PendulumSimulator extends Simulator {
 	private final double START_VELOCITY = 0;
 	
 	private boolean showVelocity;
+	private boolean showAcceleration;
 	
 	public String getName() {
 		return "Pendulum";
@@ -54,7 +52,9 @@ public class PendulumSimulator extends Simulator {
 		velocity = START_VELOCITY;
 		length = DEFAULT_LENGTH;
 		angle = DEFAULT_START_ANGLE;
+		
 		showVelocity = false;
+		showAcceleration = false;
 		
 		
 		// CENTER PANEL
@@ -75,13 +75,20 @@ public class PendulumSimulator extends Simulator {
 		southPanel.add(angleInput);
 		
 		// velocity vector option
-		CheckBoxLine velocityCheck = new CheckBoxLine("Velocity vector?");
+		CheckBoxLine velocityCheck = new CheckBoxLine("Velocity vector");
 		velocityCheck.addActionListener(e -> {
 			if (velocityCheck.isSelected()) showVelocity = true;
 			else showVelocity = false;
 		});
 		southPanel.add(velocityCheck);
 		
+		// acceleration vector option
+		CheckBoxLine accelerationCheck = new CheckBoxLine("Acceleration vector");
+		accelerationCheck.addActionListener(e -> {
+			if (accelerationCheck.isSelected()) showAcceleration = true;
+			else showAcceleration = false;
+		});
+		southPanel.add(accelerationCheck);
 
 		
 		// control buttons
@@ -188,6 +195,13 @@ public class PendulumSimulator extends Simulator {
 			g.setColor(Color.BLACK);
 			g.drawLine(PendulumCenterX, PendulumCenterY, x, y);	
 			
+			// drawing acceleration vector
+			if (showAcceleration) {
+				int x2 = (int) (acceleration * Math.cos(angle) * PhysicsRatios.VELOCITY_SCALING) + x;
+				int y2 = (int) -(acceleration * Math.sin(angle) * PhysicsRatios.VELOCITY_SCALING) + y;
+				g.setColor(Color.BLUE);
+				Vector.drawVector(g, x, y, x2, y2);
+			}
 			
 			// drawing velocity vector
 			if (showVelocity) {
@@ -196,7 +210,6 @@ public class PendulumSimulator extends Simulator {
 				g.setColor(Color.RED);
 				Vector.drawVector(g, x, y, x2, y2);
 			}
-			
 			
 			
 		}
