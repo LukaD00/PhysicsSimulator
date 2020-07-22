@@ -6,14 +6,18 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import constants.GUI;
 import constants.Physics;
 import constants.PhysicsRatios;
 
 import guiClasses.ButtonControl;
+import guiClasses.CheckBoxLine;
 import guiClasses.InputLine;
 import guiClasses.Vector;
 
@@ -37,6 +41,8 @@ public class PendulumSimulator extends Simulator {
 	private double velocity;
 	private final double START_VELOCITY = 0;
 	
+	private boolean showVelocity;
+	
 	public String getName() {
 		return "Pendulum";
 	}
@@ -48,6 +54,7 @@ public class PendulumSimulator extends Simulator {
 		velocity = START_VELOCITY;
 		length = DEFAULT_LENGTH;
 		angle = DEFAULT_START_ANGLE;
+		showVelocity = false;
 		
 		
 		// CENTER PANEL
@@ -66,6 +73,16 @@ public class PendulumSimulator extends Simulator {
 		// starting angle
 		InputLine angleInput = new InputLine("Starting angle (deg): ", Math.toDegrees(DEFAULT_START_ANGLE)); 
 		southPanel.add(angleInput);
+		
+		// velocity vector option
+		CheckBoxLine velocityCheck = new CheckBoxLine("Velocity vector?");
+		velocityCheck.addActionListener(e -> {
+			if (velocityCheck.isSelected()) showVelocity = true;
+			else showVelocity = false;
+		});
+		southPanel.add(velocityCheck);
+		
+
 		
 		// control buttons
 		ButtonControl buttons = new ButtonControl();
@@ -173,10 +190,13 @@ public class PendulumSimulator extends Simulator {
 			
 			
 			// drawing velocity vector
-			int x2 = (int) (velocity * Math.cos(angle) * PhysicsRatios.VELOCITY_SCALING) + x;
-			int y2 = (int) -(velocity * Math.sin(angle) * PhysicsRatios.VELOCITY_SCALING) + y;
-			g.setColor(Color.RED);
-			Vector.drawVector(g, x, y, x2, y2);
+			if (showVelocity) {
+				int x2 = (int) (velocity * Math.cos(angle) * PhysicsRatios.VELOCITY_SCALING) + x;
+				int y2 = (int) -(velocity * Math.sin(angle) * PhysicsRatios.VELOCITY_SCALING) + y;
+				g.setColor(Color.RED);
+				Vector.drawVector(g, x, y, x2, y2);
+			}
+			
 			
 			
 		}
